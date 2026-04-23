@@ -34,11 +34,11 @@ export async function GET(req: NextRequest) {
     const isLocal = process.env.NODE_ENV === "development";
     const executablePath = isLocal 
       ? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-      : await chromium.default.executablePath();
+      : await chromium.executablePath();
 
     const browser = await puppeteer.default.launch({
-      args: chromium.default.args,
-      defaultViewport: chromium.default.defaultViewport,
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
       executablePath,
       headless: true,
     });
