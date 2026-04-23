@@ -171,7 +171,7 @@ export function DynamicField({ question, value, onChange }: DynamicFieldProps) {
     case "image":
       return wrap(
         <div className="space-y-3">
-          {value && (
+          {!!value && (
             <div className="relative w-32 h-32 border-2 border-black">
               <Image
                 src={urlFor(value as string).width(128).height(128).fit("crop").url()}

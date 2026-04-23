@@ -29,6 +29,6 @@ export async function POST(req: NextRequest) {
   const existing = await prisma.question.findUnique({ where: { slug: parsed.data.slug } });
   if (existing) return apiError("A question with this slug already exists", 409);
 
-  const question = await prisma.question.create({ data: parsed.data });
+  const question = await prisma.question.create({ data: parsed.data as any });
   return apiSuccess(question, 201);
 }

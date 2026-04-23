@@ -28,16 +28,9 @@ export const createUserSchema = z.object({
 });
 
 export const csvRowSchema = z.object({
-  email: z.string({ required_error: "Email is missing" }).email("Invalid email format"),
-  role: z.enum(["ADMIN", "USER"], { 
-    errorMap: (issue) => {
-      if (issue.code === "invalid_enum_value" || issue.code === "invalid_type") {
-        return { message: "Role must be ADMIN or USER" };
-      }
-      return { message: issue.message || "Invalid role" };
-    }
-  }),
-  password: z.string({ required_error: "Password is missing" }).min(8, "Password must be at least 8 characters"),
+  email: z.string({ message: "Email is missing" }).email("Invalid email format"),
+  role: z.enum(["ADMIN", "USER"], { message: "Role must be ADMIN or USER" }),
+  password: z.string({ message: "Password is missing" }).min(8, "Password must be at least 8 characters"),
 });
 
 export const questionSchema = z.object({
@@ -54,8 +47,8 @@ export const questionSchema = z.object({
   required: z.boolean().default(false),
   order: z.number().int(),
   options: z.array(z.string()).optional().nullable(),
-  validation: z.record(z.unknown()).optional().nullable(),
-  config: z.record(z.unknown()).optional().nullable(),
+  validation: z.record(z.string(), z.unknown()).optional().nullable(),
+  config: z.record(z.string(), z.unknown()).optional().nullable(),
 });
 
 export const adminResetPasswordSchema = z.object({
