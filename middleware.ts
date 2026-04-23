@@ -9,6 +9,11 @@ export default auth((req: NextRequest & { auth: { user?: { mustChangePassword?: 
   const session = req.auth;
 
   const isPublic = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
+  const isRoot = pathname === "/";
+
+  if (isRoot) {
+    return NextResponse.redirect(new URL(session?.user ? "/dashboard" : "/login", req.url));
+  }
 
   if (!session?.user && !isPublic) {
     return NextResponse.redirect(new URL("/login", req.url));
