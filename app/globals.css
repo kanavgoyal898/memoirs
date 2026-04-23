@@ -46,8 +46,8 @@ input[type="checkbox"] {
 @theme {
   --color-pastel-pink: #ffd1dc;
   --color-pastel-blue: #aec6cf;
-  --color-pastel-green: #bbf7d0; /* Tailwind green-200 */
-  --color-pastel-yellow: #fef08a; /* Tailwind yellow-200 */
-  --color-pastel-purple: #e9d5ff; /* Tailwind purple-200 */
-  --color-pastel-orange: #fed7aa; /* Tailwind orange-200 */
+  --color-pastel-green: #bbf7d0; 
+  --color-pastel-yellow: #fef08a; 
+  --color-pastel-purple: #e9d5ff; 
+  --color-pastel-orange: #fed7aa; 
 }
