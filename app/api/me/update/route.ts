@@ -17,7 +17,7 @@ export async function PATCH(req: NextRequest) {
   const body = await req.json();
   const parsed = updateSchema.safeParse(body);
   if (!parsed.success) {
-    return apiError(parsed.error.errors.map((e) => e.message).join(", "));
+    return apiError(parsed.error.issues.map((e) => e.message).join(", "));
   }
 
   const email = session!.user.email;

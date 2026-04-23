@@ -59,7 +59,7 @@ export function FileUpload({
 
   return (
     <label
-      className={`flex flex-col items-center justify-center border-2 border-dashed border-black p-8 cursor-pointer transition-colors ${dragOver ? "bg-neutral-100" : "bg-white hover:bg-neutral-50"}`}
+      className={`flex flex-col items-center justify-center border-2 border-dashed border-black p-8 cursor-pointer transition-colors ${dragOver ? "bg-neutral-100" : "bg-pastel-blue hover:bg-pastel-purple"}`}
       onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
       onDragLeave={() => setDragOver(false)}
       onDrop={(e) => {

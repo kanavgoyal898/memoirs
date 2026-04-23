@@ -70,11 +70,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
-        token.role = (user as { role: string }).role;
-        token.mustChangePassword = (user as { mustChangePassword: boolean }).mustChangePassword;
+        token.role = (user as any).role;
+        token.mustChangePassword = (user as any).mustChangePassword;
         token.email = user.email;
+      }
+      if (trigger === "update" && session) {
+        if (session.mustChangePassword !== undefined) {
+          token.mustChangePassword = session.mustChangePassword;
+        }
       }
       return token;
     },

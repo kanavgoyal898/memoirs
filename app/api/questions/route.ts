@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
   }
   const parsed = questionSchema.safeParse(body);
   if (!parsed.success) {
-    return apiError(parsed.error.errors.map((e) => e.message).join(", "));
+    return apiError(parsed.error.issues.map((e) => e.message).join(", "));
   }
 
   const existing = await prisma.question.findUnique({ where: { slug: parsed.data.slug } });

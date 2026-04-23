@@ -30,7 +30,7 @@ const Toast = React.forwardRef<
     ref={ref}
     className={cn(
       "flex w-full items-start justify-between border-2 border-black p-4 shadow-[4px_4px_0px_#000] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right-full",
-      variant === "destructive" ? "bg-black text-white" : "bg-white text-black",
+      variant === "destructive" ? "bg-black text-white" : "bg-pastel-orange text-black",
       className
     )}
     {...props}

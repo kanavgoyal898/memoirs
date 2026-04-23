@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const parsed = adminResetPasswordSchema.safeParse(body);
   if (!parsed.success) {
-    return apiError(parsed.error.errors.map((e) => e.message).join(", "));
+    return apiError(parsed.error.issues.map((e) => e.message).join(", "));
   }
 
   const { email, newPassword } = parsed.data;

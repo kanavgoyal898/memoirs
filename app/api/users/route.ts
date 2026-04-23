@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const parsed = createUserSchema.safeParse(body);
   if (!parsed.success) {
-    return apiError(parsed.error.errors.map((e) => e.message).join(", "));
+    return apiError(parsed.error.issues.map((e) => e.message).join(", "));
   }
 
   const { collegeEmail, firstName, lastName, quote, password, role } = parsed.data;

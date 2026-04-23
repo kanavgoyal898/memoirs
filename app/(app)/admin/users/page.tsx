@@ -184,16 +184,16 @@ export default function AdminUsersPage() {
                 <p className="text-xs text-neutral-500 truncate">{user.collegeEmail}</p>
               </div>
               <div className="col-span-2">
-                <span className={`text-xs font-black px-1.5 py-0.5 border-2 border-black ${user.role === "ADMIN" ? "bg-black text-white" : ""}`}>
+                <span className={`text-xs font-black px-1.5 py-0.5 ${user.role === "ADMIN" ? "bg-black text-white" : "bg-neutral-100"}`}>
                   {user.role}
                 </span>
               </div>
               <div className="col-span-2 flex flex-col gap-1">
                 {user.mustChangePassword && (
-                  <span className="text-xs font-bold text-amber-700 border border-amber-700 px-1">MUST CHANGE PW</span>
+                  <span className="text-xs font-bold text-amber-700 px-1 uppercase tracking-tight">Force Reset</span>
                 )}
                 {isLocked(user) && (
-                  <span className="flex items-center gap-1 text-xs font-bold text-red-700 border border-red-700 px-1">
+                  <span className="flex items-center gap-1 text-xs font-bold text-red-700 px-1">
                     <Lock className="h-3 w-3" /> LOCKED
                   </span>
                 )}
@@ -213,7 +213,7 @@ export default function AdminUsersPage() {
                     setResetPassword(generateTempPassword());
                   }}
                 >
-                  <RotateCcw className="h-3 w-3 mr-1" /> Reset pw
+                  <RotateCcw className="h-3 w-3 mr-1" /> Reset
                 </Button>
               </div>
             </motion.div>
@@ -291,7 +291,7 @@ export default function AdminUsersPage() {
           <DialogFooter>
             <Button variant="ghost" onClick={() => { setResetTarget(null); setResetPassword(""); }}>Cancel</Button>
             <Button variant="destructive" onClick={handleReset} disabled={resetting || !resetPassword}>
-              {resetting ? "Resetting..." : "Reset password"}
+              {resetting ? "Resetting..." : "Reset"}
             </Button>
           </DialogFooter>
         </DialogContent>

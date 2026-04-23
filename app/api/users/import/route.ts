@@ -25,10 +25,14 @@ export async function POST(req: NextRequest) {
 
   for (const row of deduplicated) {
     try {
+      const existing = await prisma.user.findUnique({ where: { collegeEmail: row.email } });
+      if (existing) {
+        continue;
+      }
+
       const passwordHash = await hashPassword(row.password);
-      await prisma.user.upsert({
-        where: { collegeEmail: row.email },
-        create: {
+      await prisma.user.create({
+        data: {
           collegeEmail: row.email,
           firstName: "",
           lastName: "",
@@ -37,19 +41,8 @@ export async function POST(req: NextRequest) {
           role: row.role as "ADMIN" | "USER",
           mustChangePassword: true,
         },
-        update: {
-          role: row.role as "ADMIN" | "USER",
-          passwordHash,
-          mustChangePassword: true,
-        },
       });
-
-      const existing = await prisma.user.findUnique({ where: { collegeEmail: row.email } });
-      if (existing?.createdAt && existing.createdAt.getTime() > Date.now() - 5000) {
-        results.created++;
-      } else {
-        results.updated++;
-      }
+      results.created++;
     } catch {
       results.failed++;
       results.errors.push({

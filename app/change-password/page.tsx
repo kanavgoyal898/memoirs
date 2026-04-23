@@ -12,7 +12,7 @@ import { useSession } from "next-auth/react";
 
 export default function ChangePasswordPage() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, update: updateSession } = useSession();
   const { toast } = useToast();
   const [form, setForm] = useState({
     currentPassword: "",
@@ -51,8 +51,9 @@ export default function ChangePasswordPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       
-      toast({ title: "Password changed. Please sign in again." });
-      router.push("/login");
+      toast({ title: "Password changed successfully!" });
+      await updateSession({ mustChangePassword: false });
+      window.location.href = "/dashboard";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to change password.");
     } finally {

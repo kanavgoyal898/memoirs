@@ -32,6 +32,7 @@ export default async function DashboardPage() {
       href: "/form",
       stat: `${completion}% complete`,
       warn: completion < 100,
+      color: "bg-pastel-pink",
     },
     {
       icon: BookOpen,
@@ -40,6 +41,7 @@ export default async function DashboardPage() {
       href: "/yearbook",
       stat: `${yearbookCount} members`,
       warn: false,
+      color: "bg-pastel-purple",
     },
     {
       icon: ImageIcon,
@@ -48,6 +50,7 @@ export default async function DashboardPage() {
       href: "/wall",
       stat: `${wallCount} posts`,
       warn: false,
+      color: "bg-pastel-green",
     },
     {
       icon: LayoutGrid,
@@ -56,6 +59,7 @@ export default async function DashboardPage() {
       href: "/api/export/pdf",
       stat: "Full yearbook",
       warn: false,
+      color: "bg-pastel-orange",
     },
   ];
 
@@ -89,8 +93,8 @@ export default async function DashboardPage() {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {cards.map(({ icon: Icon, title, description, href, stat, warn }) => (
-          <Card key={title} className={warn ? "border-black" : ""}>
+        {cards.map(({ icon: Icon, title, description, href, stat, warn, color }) => (
+          <Card key={title} className={`${color} ${warn ? "border-black" : ""}`}>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <Icon className="h-5 w-5" />

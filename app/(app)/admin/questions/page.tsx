@@ -225,7 +225,7 @@ export default function AdminQuestionsPage() {
               layout
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="border-2 border-black p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-[4px_4px_0px_#000] bg-white"
+              className="border-2 border-black p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-[4px_4px_0px_#000] bg-pastel-orange"
             >
               <div>
                 <div className="flex flex-wrap items-center gap-2">

@@ -15,6 +15,15 @@ interface ProfileCardProps {
   index: number;
 }
 
+const PASTEL_COLORS = [
+  "bg-pastel-pink",
+  "bg-pastel-blue",
+  "bg-pastel-green",
+  "bg-pastel-yellow",
+  "bg-pastel-purple",
+  "bg-pastel-orange"
+];
+
 export function ProfileCard({
   collegeEmail,
   firstName,
@@ -27,13 +36,16 @@ export function ProfileCard({
     ? urlFor(profileImage).width(400).height(400).fit("crop").url()
     : null;
 
+  const colorIndex = Array.from(collegeEmail).reduce((acc, char) => acc + char.charCodeAt(0), 0) % PASTEL_COLORS.length;
+  const bgColor = PASTEL_COLORS[colorIndex];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.04, duration: 0.3 }}
       whileHover={{ y: -4, boxShadow: "6px 6px 0px #000" }}
-      className="border-2 border-black bg-white shadow-[4px_4px_0px_#000] transition-shadow cursor-pointer"
+      className={`border-2 border-black ${bgColor} shadow-[4px_4px_0px_#000] transition-shadow cursor-pointer`}
     >
       <Link href={`/profile/${encodeURIComponent(collegeEmail)}`} className="block">
         <div className="aspect-square overflow-hidden border-b-2 border-black bg-neutral-100 relative">

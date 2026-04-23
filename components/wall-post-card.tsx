@@ -21,6 +21,15 @@ interface WallPostCardProps {
   onDelete: (id: string) => void;
 }
 
+const PASTEL_COLORS = [
+  "bg-pastel-pink",
+  "bg-pastel-blue",
+  "bg-pastel-green",
+  "bg-pastel-yellow",
+  "bg-pastel-purple",
+  "bg-pastel-orange"
+];
+
 export function WallPostCard({
   id,
   imageUrl,
@@ -38,6 +47,9 @@ export function WallPostCard({
   const imgUrl = imageUrl.startsWith("image-")
     ? urlFor(imageUrl).width(600).url()
     : imageUrl;
+
+  const colorIndex = Array.from(id).reduce((acc, char) => acc + char.charCodeAt(0), 0) % PASTEL_COLORS.length;
+  const bgColor = PASTEL_COLORS[colorIndex];
 
   async function handleDelete() {
     setDeleting(true);
@@ -61,7 +73,7 @@ export function WallPostCard({
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="border-2 border-black bg-white shadow-[4px_4px_0px_#000]"
+        className={`border-2 border-black ${bgColor} shadow-[4px_4px_0px_#000]`}
       >
         <div className="aspect-square relative overflow-hidden border-b-2 border-black bg-neutral-100">
           <Image

@@ -22,6 +22,19 @@ export function parseCsvFile(content: string): ParsedCsvResult {
   const valid: CsvRow[] = [];
   const errors: { row: number; data: Partial<CsvRow>; errors: string[] }[] = [];
 
+  const headers = result.meta.fields || [];
+  const required = ["email", "role", "password"];
+  const missing = required.filter((h) => !headers.includes(h));
+
+  if (missing.length > 0) {
+    errors.push({
+      row: 1,
+      data: {},
+      errors: [`Missing required headers: ${missing.join(", ")}`],
+    });
+    return { valid, errors };
+  }
+
   result.data.forEach((row, index) => {
     const parsed = csvRowSchema.safeParse({
       email: row.email?.trim().toLowerCase(),
@@ -35,7 +48,7 @@ export function parseCsvFile(content: string): ParsedCsvResult {
       errors.push({
         row: index + 2,
         data: { email: row.email, role: row.role },
-        errors: parsed.error.errors.map((e) => e.message),
+        errors: parsed.error.issues.map((e) => e.message),
       });
     }
   });
