@@ -49,7 +49,6 @@ const FIELD_TYPES = [
   { value: "image", label: "Single Image Upload" },
   { value: "gallery", label: "Image Gallery Upload" },
   { value: "file", label: "File Upload" },
-  { value: "social_links", label: "Social Media Links" },
   { value: "key_value_list", label: "Key-Value List" },
   { value: "toggle", label: "Yes/No Toggle" }
 ];

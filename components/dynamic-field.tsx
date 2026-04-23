@@ -17,6 +17,10 @@ import { urlFor } from "@/lib/sanity";
 import Image from "next/image";
 import { X, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { MultiSelect } from "@/components/ui/multi-select";
+
 
 interface Question {
   id: string;
@@ -96,45 +100,62 @@ export function DynamicField({ question, value, onChange }: DynamicFieldProps) {
 
     case "radio":
       return wrap(
-        <div className="flex flex-col gap-2">
+        <RadioGroup
+          value={(value as string) ?? ""}
+          onValueChange={onChange}
+          className="flex flex-col gap-3"
+        >
           {(question.options ?? []).map((opt) => (
-            <label key={opt} className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name={question.slug}
-                value={opt}
-                checked={(value as string) === opt}
-                onChange={() => onChange(opt)}
-                className="border-2 border-black"
+            <div key={opt} className="flex items-center gap-3">
+              <RadioGroupItem value={opt} id={`${question.slug}-${opt}`} />
+              <Label
+                htmlFor={`${question.slug}-${opt}`}
+                className="text-sm font-medium cursor-pointer"
+              >
+                {opt}
+              </Label>
+            </div>
+          ))}
+        </RadioGroup>
+      );
+
+    case "checkbox": {
+      const selected = (value as string[]) ?? [];
+      return wrap(
+        <div className="flex flex-col gap-3">
+          {(question.options ?? []).map((opt) => (
+            <div key={opt} className="flex items-center gap-3">
+              <Checkbox
+                id={`${question.slug}-${opt}`}
+                checked={selected.includes(opt)}
+                onCheckedChange={(checked) => {
+                  const next = checked
+                    ? [...selected, opt]
+                    : selected.filter((s) => s !== opt);
+                  onChange(next);
+                }}
               />
-              <span className="text-sm font-medium">{opt}</span>
-            </label>
+              <Label
+                htmlFor={`${question.slug}-${opt}`}
+                className="text-sm font-medium cursor-pointer"
+              >
+                {opt}
+              </Label>
+            </div>
           ))}
         </div>
       );
+    }
 
-    case "checkbox":
     case "multi-select": {
       const selected = (value as string[]) ?? [];
       return wrap(
-        <div className="flex flex-col gap-2">
-          {(question.options ?? []).map((opt) => (
-            <label key={opt} className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={selected.includes(opt)}
-                onChange={() => {
-                  const next = selected.includes(opt)
-                    ? selected.filter((s) => s !== opt)
-                    : [...selected, opt];
-                  onChange(next);
-                }}
-                className="border-2 border-black h-4 w-4"
-              />
-              <span className="text-sm font-medium">{opt}</span>
-            </label>
-          ))}
-        </div>
+        <MultiSelect
+          options={question.options ?? []}
+          selected={selected}
+          onChange={onChange}
+          placeholder={placeholder || "Select multiple..."}
+        />
       );
     }
 
