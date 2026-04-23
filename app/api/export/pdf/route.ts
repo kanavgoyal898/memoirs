@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   const email = searchParams.get("email");
 
   try {
-    const chromium = await import("@sparticuz/chromium");
+    const chromium = (await import("@sparticuz/chromium")).default as any;
     const puppeteer = await import("puppeteer-core");
 
     const [questions, users] = await Promise.all([
