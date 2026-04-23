@@ -3,8 +3,10 @@ import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import { comparePassword } from "@/lib/hash";
 import { loginSchema } from "@/lib/validations";
+import { authConfig } from "./auth.config";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   providers: [
     Credentials({
       name: "credentials",
@@ -69,32 +71,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    async jwt({ token, user, trigger, session }) {
-      if (user) {
-        token.role = (user as any).role;
-        token.mustChangePassword = (user as any).mustChangePassword;
-        token.email = user.email;
-      }
-      if (trigger === "update" && session) {
-        if (session.mustChangePassword !== undefined) {
-          token.mustChangePassword = session.mustChangePassword;
-        }
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (token) {
-        session.user.role = token.role as string;
-        session.user.mustChangePassword = token.mustChangePassword as boolean;
-        session.user.email = token.email as string;
-      }
-      return session;
-    },
-  },
-  pages: {
-    signIn: "/login",
-  },
   session: {
     strategy: "jwt",
     maxAge: 24 * 60 * 60,
