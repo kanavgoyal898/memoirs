@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model User {
+  collegeEmail        String     @id
+  firstName           String
+  lastName            String
+  profileImage        String?
+  quote               String
+  passwordHash        String
+  mustChangePassword  Boolean    @default(true)
+  failedLoginAttempts Int        @default(0)
+  lockUntil           DateTime?
+  role                Role       @default(USER)
+  createdAt           DateTime   @default(now())
+  wallPosts           WallPost[]
+  response            Response?
+
+  @@index([role])
+  @@index([createdAt])
+}
+
+model Question {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  label       String
+  description String?
+  type        String
+  required    Boolean  @default(false)
+  order       Int
+  isActive    Boolean  @default(true)
+  options     Json?
+  validation  Json?
+  config      Json?
+  createdAt   DateTime @default(now())
+
+  @@index([order])
+  @@index([isActive])
+}
+
+model Response {
+  collegeEmail String   @id
+  answers      Json     @default("{}")
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [collegeEmail], references: [collegeEmail], onDelete: Cascade)
+}
+
+model WallPost {
+  id          String   @id @default(cuid())
+  imageUrl    String
+  caption     String
+  uploadedBy  String
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [uploadedBy], references: [collegeEmail], onDelete: Cascade)
+
+  @@index([uploadedBy])
+  @@index([createdAt])
+}
