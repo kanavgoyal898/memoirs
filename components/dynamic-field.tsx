@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -15,13 +14,12 @@ import {
 import { FileUpload } from "@/components/file-upload";
 import { urlFor } from "@/lib/sanity";
 import Image from "next/image";
-import { X, Plus } from "lucide-react";
+import { X, Plus, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { countryCodes } from "@/lib/countries";
-
 
 interface Question {
   id: string;
@@ -53,6 +51,9 @@ export function DynamicField({ question, value, onChange }: DynamicFieldProps) {
           {question.label}
           {question.required && <span className="text-red-600 ml-1">*</span>}
         </Label>
+        {question.description && (
+          <p className="text-xs text-neutral-500">{question.description}</p>
+        )}
         {helpText && <p className="text-xs text-neutral-500">{helpText}</p>}
         {children}
       </div>
@@ -60,24 +61,67 @@ export function DynamicField({ question, value, onChange }: DynamicFieldProps) {
   }
 
   switch (question.type) {
+    // ── Plain text inputs ──────────────────────────────────────────────────
     case "text":
-    case "email":
-    case "url":
-    case "number":
-    case "date":
       return wrap(
-        <div className="w-full max-w-full min-w-0">
-          <Input
-            id={question.slug}
-            type={question.type === "text" || question.type === "email" || question.type === "url" || question.type === "number" || question.type === "date" ? question.type : "text"}
-            placeholder={placeholder}
-            value={(value as string) ?? ""}
-            onChange={(e) => onChange(e.target.value)}
-            className="w-full"
-          />
-        </div>
+        <Input
+          id={question.slug}
+          type="text"
+          placeholder={placeholder}
+          value={(value as string) ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full"
+        />
       );
 
+    case "email":
+      return wrap(
+        <Input
+          id={question.slug}
+          type="email"
+          placeholder={placeholder || "you@example.com"}
+          value={(value as string) ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full"
+        />
+      );
+
+    case "url":
+      return wrap(
+        <Input
+          id={question.slug}
+          type="url"
+          placeholder={placeholder || "https://"}
+          value={(value as string) ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full"
+        />
+      );
+
+    case "number":
+      return wrap(
+        <Input
+          id={question.slug}
+          type="number"
+          placeholder={placeholder}
+          value={(value as string) ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full"
+        />
+      );
+
+    case "date":
+      return wrap(
+        <Input
+          id={question.slug}
+          type="date"
+          value={(value as string) ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full"
+        />
+      );
+
+    // ── Long text ──────────────────────────────────────────────────────────
     case "textarea":
       return wrap(
         <Textarea
@@ -88,11 +132,12 @@ export function DynamicField({ question, value, onChange }: DynamicFieldProps) {
         />
       );
 
+    // ── Choice fields ──────────────────────────────────────────────────────
     case "select":
       return wrap(
         <Select value={(value as string) ?? ""} onValueChange={onChange}>
           <SelectTrigger id={question.slug}>
-            <SelectValue placeholder={placeholder || "Select..."} />
+            <SelectValue placeholder={placeholder || "Select an option..."} />
           </SelectTrigger>
           <SelectContent>
             {(question.options ?? []).map((opt) => (
@@ -102,31 +147,38 @@ export function DynamicField({ question, value, onChange }: DynamicFieldProps) {
         </Select>
       );
 
-    case "radio":
+    case "radio": {
+      const selected = (value as string) ?? "";
       return wrap(
         <RadioGroup
-          value={(value as string) ?? ""}
+          value={selected}
           onValueChange={onChange}
-          className="flex flex-col gap-3"
+          className="flex flex-wrap gap-2 pt-1"
         >
           {(question.options ?? []).map((opt) => (
-            <div key={opt} className="flex items-center gap-3">
-              <RadioGroupItem value={opt} id={`${question.slug}-${opt}`} />
-              <Label
-                htmlFor={`${question.slug}-${opt}`}
-                className="text-sm font-medium cursor-pointer"
-              >
-                {opt}
-              </Label>
-            </div>
+            <label
+              key={opt}
+              htmlFor={`${question.slug}-${opt}`}
+              className={`flex items-center gap-2 px-4 py-2 border-2 border-black cursor-pointer text-sm font-bold transition-all select-none
+                shadow-[2px_2px_0px_#000] hover:shadow-[1px_1px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]
+                ${selected === opt ? "bg-black text-white" : "bg-white text-black hover:bg-neutral-100"}`}
+            >
+              <RadioGroupItem
+                value={opt}
+                id={`${question.slug}-${opt}`}
+                className="sr-only"
+              />
+              {opt}
+            </label>
           ))}
         </RadioGroup>
       );
+    }
 
     case "checkbox": {
       const selected = (value as string[]) ?? [];
       return wrap(
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 pt-1">
           {(question.options ?? []).map((opt) => (
             <div key={opt} className="flex items-center gap-3">
               <Checkbox
@@ -158,20 +210,34 @@ export function DynamicField({ question, value, onChange }: DynamicFieldProps) {
           options={question.options ?? []}
           selected={selected}
           onChange={onChange}
-          placeholder={placeholder || "Select multiple..."}
+          placeholder={placeholder || "Select one or more options..."}
         />
       );
     }
 
+    // ── Toggle ─────────────────────────────────────────────────────────────
     case "toggle":
-      return wrap(
-        <Switch
-          id={question.slug}
-          checked={Boolean(value)}
-          onCheckedChange={onChange}
-        />
+      return (
+        <div className="flex items-center justify-between gap-4 py-1">
+          <div className="space-y-0.5">
+            <Label htmlFor={question.slug}>
+              {question.label}
+              {question.required && <span className="text-red-600 ml-1">*</span>}
+            </Label>
+            {question.description && (
+              <p className="text-xs text-neutral-500">{question.description}</p>
+            )}
+            {helpText && <p className="text-xs text-neutral-500">{helpText}</p>}
+          </div>
+          <Switch
+            id={question.slug}
+            checked={Boolean(value)}
+            onCheckedChange={onChange}
+          />
+        </div>
       );
 
+    // ── Media ──────────────────────────────────────────────────────────────
     case "image":
       return wrap(
         <div className="space-y-3">
@@ -235,43 +301,49 @@ export function DynamicField({ question, value, onChange }: DynamicFieldProps) {
       );
     }
 
-    case "social_links": {
-      const links = (value as Record<string, string>) ?? {};
-      const platforms = question.options ?? ["Twitter", "LinkedIn", "Instagram", "GitHub"];
+    case "file":
       return wrap(
         <div className="space-y-3">
-          {platforms.map((platform) => (
-            <div key={platform} className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-              <span className="text-[10px] sm:text-xs font-black w-20 shrink-0 uppercase tracking-wider">{platform}</span>
-              <Input
-                placeholder={`${platform} URL`}
-                value={links[platform] ?? ""}
-                onChange={(e) =>
-                  onChange({ ...links, [platform]: e.target.value })
-                }
-                className="w-full"
-              />
+          {!!value && (
+            <div className="flex items-center gap-3 border-2 border-black p-3 bg-white">
+              <FileText className="h-5 w-5 shrink-0" />
+              <span className="text-xs text-neutral-600 flex-1 truncate font-medium">
+                File uploaded
+              </span>
+              <button
+                onClick={() => onChange(null)}
+                className="bg-black text-white p-0.5"
+              >
+                <X className="h-3 w-3" />
+              </button>
             </div>
-          ))}
+          )}
+          {!value && (
+            <FileUpload
+              onUpload={onChange}
+              label="Upload file"
+              type="file"
+              accept="application/pdf,image/jpeg,image/png,image/webp"
+            />
+          )}
         </div>
       );
-    }
 
+    // ── Structured fields ──────────────────────────────────────────────────
     case "phone": {
       const phoneData = (value as { countryCode: string; number: string }) ?? {
         countryCode: (question.config as any)?.defaultCountryCode ?? "+91",
         number: "",
       };
-      
       return wrap(
         <div className="flex flex-row items-center gap-2 w-full max-w-full">
-          <div className="w-24 shrink-0">
+          <div className="w-36 shrink-0">
             <Select
               value={phoneData.countryCode}
               onValueChange={(v) => onChange({ ...phoneData, countryCode: v })}
             >
               <SelectTrigger>
-                {phoneData.countryCode || "Code"}
+                <SelectValue>{phoneData.countryCode || "Code"}</SelectValue>
               </SelectTrigger>
               <SelectContent className="max-h-[300px]">
                 {countryCodes.map((c) => (
@@ -294,13 +366,35 @@ export function DynamicField({ question, value, onChange }: DynamicFieldProps) {
       );
     }
 
+    case "social_links": {
+      const links = (value as Record<string, string>) ?? {};
+      const platforms = question.options ?? ["Twitter", "LinkedIn", "Instagram", "GitHub"];
+      return wrap(
+        <div className="space-y-3">
+          {platforms.map((platform) => (
+            <div key={platform} className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+              <span className="text-[10px] sm:text-xs font-black w-24 shrink-0 uppercase tracking-wider">
+                {platform}
+              </span>
+              <Input
+                placeholder={`${platform} URL`}
+                value={links[platform] ?? ""}
+                onChange={(e) => onChange({ ...links, [platform]: e.target.value })}
+                className="w-full"
+              />
+            </div>
+          ))}
+        </div>
+      );
+    }
+
     case "key_value_list": {
       const pairs = (value as { key: string; value: string }[]) ?? [];
       return wrap(
-        <div className="space-y-4">
+        <div className="space-y-3">
           {pairs.map((pair, i) => (
-            <div key={i} className="flex flex-col sm:flex-row gap-2 items-start sm:items-center border-2 border-black p-3 sm:p-0 sm:border-0 bg-neutral-50 sm:bg-transparent">
-              <div className="grid grid-cols-2 gap-2 w-full">
+            <div key={i} className="flex gap-2 items-center">
+              <div className="grid grid-cols-2 gap-2 flex-1">
                 <Input
                   placeholder="Key"
                   value={pair.key}
@@ -322,7 +416,7 @@ export function DynamicField({ question, value, onChange }: DynamicFieldProps) {
               </div>
               <button
                 onClick={() => onChange(pairs.filter((_, j) => j !== i))}
-                className="self-end sm:self-auto border-2 border-black p-1.5 hover:bg-black hover:text-white transition-colors bg-white"
+                className="border-2 border-black p-1.5 hover:bg-black hover:text-white transition-colors bg-white shrink-0"
               >
                 <X className="h-4 w-4" />
               </button>
