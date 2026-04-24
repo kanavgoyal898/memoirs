@@ -99,7 +99,9 @@ export default function LoginPage() {
         </form>
 
         <p className="text-xs text-neutral-400 mt-8 text-center">
-          Access is restricted to pre-registered users only.
+          Access is restricted to pre-registered users only. In case of any issue, contact your administrator or drop an email at <a href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAIL || ""}`} className="underline text-black">
+            {process.env.NEXT_PUBLIC_SUPPORT_EMAIL}
+          </a>.
         </p>
       </motion.div>
     </div>
