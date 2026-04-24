@@ -42,7 +42,7 @@ export function Navbar({ role, email }: NavbarProps) {
 
         <div className="hidden sm:flex items-center gap-3">
           <span className="text-xs font-medium text-neutral-500 truncate max-w-[160px]">
-            {email}
+            {email.split("@")[0]}
           </span>
           {role === "ADMIN" && (
             <Link href="/admin">

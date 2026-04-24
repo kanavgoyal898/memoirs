@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { GraduationCap, PartyPopper } from "lucide-react";
 
 interface TimeUnits {
@@ -52,18 +51,9 @@ function UnitGrid({ units }: { units: { label: string; value: number }[] }) {
           key={label}
           className={`${UNIT_COLORS[i]} border-2 border-black p-3 text-center shadow-[2px_2px_0px_#000] min-w-0`}
         >
-          <AnimatePresence mode="popLayout">
-            <motion.p
-              key={value}
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 8 }}
-              transition={{ duration: 0.15 }}
-              className="text-3xl sm:text-4xl font-black tabular-nums leading-none"
-            >
-              {String(value).padStart(2, "0")}
-            </motion.p>
-          </AnimatePresence>
+          <p className="text-3xl sm:text-4xl font-black tabular-nums leading-none">
+            {String(value).padStart(2, "0")}
+          </p>
           <p className="text-[10px] font-black uppercase tracking-widest mt-2 text-neutral-600 truncate">
             {label}
           </p>
