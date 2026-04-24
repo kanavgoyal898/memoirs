@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { FileUpload } from "@/components/file-upload";
 import { useToast } from "@/components/providers/toast-provider";
+import { useRouter } from "next/navigation";
 import { urlFor } from "@/lib/sanity";
 import Image from "next/image";
 import { X } from "lucide-react";
@@ -26,6 +27,7 @@ interface Question {
 }
 
 export default function FormPage() {
+  const router = useRouter();
   const { toast } = useToast();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<Record<string, unknown>>({});
@@ -93,6 +95,7 @@ export default function FormPage() {
       if (!rRes.ok || !uRes.ok) throw new Error();
       toast({ title: "Profile saved" });
       setDirty(false);
+      router.push("/dashboard");
     } catch {
       toast({ title: "Failed to save", variant: "destructive" });
     } finally {

@@ -66,7 +66,7 @@ export function DynamicField({ question, value, onChange }: DynamicFieldProps) {
     case "number":
     case "date":
       return wrap(
-        <div className="w-full min-w-0">
+        <div className="w-full max-w-full min-w-0">
           <Input
             id={question.slug}
             type={question.type === "text" || question.type === "email" || question.type === "url" || question.type === "number" || question.type === "date" ? question.type : "text"}
