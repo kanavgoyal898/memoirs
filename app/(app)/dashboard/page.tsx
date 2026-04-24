@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { computeProfileCompletion } from "@/lib/profile";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { GraduationCountdown } from "@/components/graduation-countdown";
 import Link from "next/link";
 import { BookOpen, ImageIcon, LayoutGrid, User } from "lucide-react";
 import type { Metadata } from "next";
@@ -63,6 +64,8 @@ export default async function DashboardPage() {
     },
   ];
 
+  const graduationDate = process.env.NEXT_PUBLIC_GRADUATION_DATE ?? null;
+
   return (
     <div className="space-y-10">
       <div className="border-b-2 border-black pb-8">
@@ -90,6 +93,10 @@ export default async function DashboardPage() {
             </Button>
           </Link>
         </div>
+      )}
+
+      {graduationDate && (
+        <GraduationCountdown targetDate={graduationDate} />
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
