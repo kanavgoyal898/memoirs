@@ -67,37 +67,34 @@ export default async function DashboardPage() {
   const graduationDate = process.env.NEXT_PUBLIC_GRADUATION_DATE ?? null;
 
   return (
-    <div className="space-y-10">
-      <div className="border-b-2 border-black pb-8">
-        <h1 className="text-4xl font-black tracking-tight">
-          Welcome back, {user?.firstName}.
-        </h1>
-        {user?.quote && (
-          <p className="text-neutral-500 mt-2 text-sm italic max-w-xl">
-            &ldquo;{user.quote}&rdquo;
-          </p>
-        )}
-      </div>
+    <div className="space-y-6">
+      <h1 className="text-4xl font-black tracking-tight">
+        Welcome back, {user?.firstName}.
+      </h1>
 
-      {completion < 100 && (
-        <div className="border-2 border-black bg-black text-white px-6 py-4 flex items-center justify-between">
-          <div>
-            <p className="font-black">Profile {completion}% complete</p>
-            <p className="text-sm text-neutral-300 mt-0.5">
-              Complete your profile so classmates can find you in the yearbook.
-            </p>
+      {
+        completion < 100 && (
+          <div className="border-2 border-black bg-black text-white px-6 py-4 flex items-center justify-between">
+            <div>
+              <p className="font-black">Profile {completion}% complete</p>
+              <p className="text-sm text-neutral-300 mt-0.5">
+                Complete your profile so classmates can find you in the yearbook.
+              </p>
+            </div>
+            <Link href="/form">
+              <Button variant="outline" className="bg-white text-black border-white hover:bg-black hover:text-white">
+                Complete now
+              </Button>
+            </Link>
           </div>
-          <Link href="/form">
-            <Button variant="outline" className="bg-white text-black border-white hover:bg-black hover:text-white">
-              Complete now
-            </Button>
-          </Link>
-        </div>
-      )}
+        )
+      }
 
-      {graduationDate && (
-        <GraduationCountdown targetDate={graduationDate} />
-      )}
+      {
+        graduationDate && (
+          <GraduationCountdown targetDate={graduationDate} />
+        )
+      }
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {cards.map(({ icon: Icon, title, description, href, stat, warn, color }) => (
@@ -122,6 +119,6 @@ export default async function DashboardPage() {
           </Card>
         ))}
       </div>
-    </div>
+    </div >
   );
 }

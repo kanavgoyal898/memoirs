@@ -40,8 +40,8 @@ export function Navbar({ role, email }: NavbarProps) {
           MEMOIRS
         </Link>
 
-        <div className="hidden sm:flex items-center gap-3">
-          <span className="text-xs font-medium text-neutral-500 truncate max-w-[160px]">
+        <div className="hidden sm:flex items-center gap-2">
+          <span className="text-xs font-medium text-neutral-500 pe-4 truncate max-w-[160px]">
             {email.split("@")[0]}
           </span>
           {role === "ADMIN" && (
@@ -65,7 +65,7 @@ export function Navbar({ role, email }: NavbarProps) {
           </Button>
         </div>
 
-        <button 
+        <button
           className="sm:hidden p-2 -mr-2"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
