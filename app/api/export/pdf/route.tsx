@@ -55,6 +55,26 @@ function getAccent(seed: string) {
   return PASTELS[h % PASTELS.length];
 }
 
+const isAnswered = (type: string, value: any) => {
+  if (value === undefined || value === null || value === "") return false;
+  
+  if (Array.isArray(value)) {
+    if (type === "key_value_list") {
+      return value.some((item: any) => item && typeof item === "object" && item.key?.trim() && item.value?.trim());
+    }
+    return value.length > 0;
+  }
+  
+  if (typeof value === "object") {
+    if (type === "phone") {
+      return !!(value as any).number;
+    }
+    return Object.values(value as object).some(v => v !== "" && v !== null && v !== undefined);
+  }
+  
+  return true;
+};
+
 const styles = StyleSheet.create({
   page: {
     backgroundColor: "#ffffff",
@@ -367,7 +387,7 @@ const RenderField = ({ type, value, options }: { type: string, value: unknown, o
       );
     }
     case "key_value_list": {
-      const pairs = value as { key: string; value: string }[];
+      const pairs = (value as { key: string; value: string }[]).filter(p => p.key?.trim() && p.value?.trim());
       if (!pairs.length) return null;
       return (
         <View style={styles.capsuleContainer}>
@@ -396,6 +416,16 @@ const RenderField = ({ type, value, options }: { type: string, value: unknown, o
     case "email":
     case "url":
       return <Text style={[styles.answerValue, { color: "#000", fontWeight: "bold" }]}>{String(value)}</Text>;
+    case "number":
+      return <Text style={styles.answerValue}>{String(value)}</Text>;
+    case "toggle": {
+      const label = value ? "YES" : "NO";
+      return (
+        <View style={[styles.pill, { backgroundColor: "#000", marginTop: 4, paddingHorizontal: 15 }]}>
+          <Text style={[styles.pillText, { color: "#fff" }]}>{label}</Text>
+        </View>
+      );
+    }
     default: {
       if (typeof value === "boolean") {
         const label = value ? "YES" : "NO";
@@ -427,7 +457,7 @@ const YearbookDocument = ({ users, questions }: any) => {
         const answers = (user.response?.answers as Record<string, unknown>) ?? {};
         const answered = questions.filter((q: any) => {
           const v = answers[q.slug];
-          return v !== undefined && v !== null && v !== "";
+          return isAnswered(q.type, v);
         });
         const imgUrl = user.profileImage ? urlFor(user.profileImage).width(600).height(600).fit("crop").url() : null;
         const initials = `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase();
