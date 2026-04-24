@@ -32,11 +32,25 @@ export async function PUT(req: NextRequest) {
   }
 
   const email = session!.user.email;
+  
+  // Clean empty key-value pairs
+  const cleanedAnswers = { ...answers };
+  for (const key in cleanedAnswers) {
+    const val = cleanedAnswers[key];
+    if (Array.isArray(val)) {
+      cleanedAnswers[key] = val.filter((item: any) => {
+        if (item && typeof item === "object" && "key" in item && "value" in item) {
+          return item.key?.trim() !== "" && item.value?.trim() !== "";
+        }
+        return true;
+      });
+    }
+  }
 
   const response = await prisma.response.upsert({
     where: { collegeEmail: email },
-    create: { collegeEmail: email, answers },
-    update: { answers },
+    create: { collegeEmail: email, answers: cleanedAnswers },
+    update: { answers: cleanedAnswers },
   });
 
   return apiSuccess(response);
