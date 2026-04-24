@@ -135,9 +135,6 @@ export default function FormPage() {
               UNSAVED
             </span>
           )}
-          <Button onClick={handleSave} disabled={saving}>
-            {saving ? "Saving..." : "Save profile"}
-          </Button>
         </div>
       </div>
 
@@ -179,7 +176,7 @@ export default function FormPage() {
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="firstName">First Name <span className="text-red-600">*</span></Label>
             <Input
@@ -235,11 +232,11 @@ export default function FormPage() {
         </section>
       )}
 
-      <div className="flex justify-end pb-10">
+      <div className="flex justify-center md:justify-end pb-10">
         <Button size="lg" onClick={handleSave} disabled={saving}>
-          {saving ? "Saving..." : "Save profile"}
+          {saving ? "Saving..." : "Save"}
         </Button>
       </div>
-    </div>
+    </div >
   );
 }

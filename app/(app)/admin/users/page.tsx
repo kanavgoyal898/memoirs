@@ -42,6 +42,7 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [total, setTotal] = useState(0);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
   const [createOpen, setCreateOpen] = useState(false);
@@ -59,15 +60,20 @@ export default function AdminUsersPage() {
     role: "USER",
   });
 
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
   const load = useCallback(async () => {
     setLoading(true);
-    const params = new URLSearchParams({ search, limit: "50" });
+    const params = new URLSearchParams({ search: debouncedSearch, limit: "50" });
     const res = await fetch(`/api/users?${params}`);
     const data = await res.json();
     setUsers(data.users ?? []);
     setTotal(data.total ?? 0);
     setLoading(false);
-  }, [search]);
+  }, [debouncedSearch]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -129,9 +135,6 @@ export default function AdminUsersPage() {
           <p className="text-sm text-neutral-500 mt-1">{total} registered users</p>
         </div>
         <div className="flex gap-2">
-          <Link href="/admin/import">
-            <Button variant="outline" size="sm">Bulk import</Button>
-          </Link>
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <Plus className="h-4 w-4 mr-1" /> New user
           </Button>
@@ -164,12 +167,12 @@ export default function AdminUsersPage() {
         </div>
       ) : (
         <div className="border-2 border-black divide-y-2 divide-black">
-          <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-black text-white text-xs font-black uppercase tracking-wider">
+          <div className="hidden sm:grid grid-cols-12 gap-2 px-4 py-2 bg-black text-white text-xs font-black uppercase tracking-wider">
             <div className="col-span-4">User</div>
             <div className="col-span-2">Role</div>
-            <div className="col-span-2">Status</div>
+            <div className="col-span-3">Status</div>
             <div className="col-span-2">Created</div>
-            <div className="col-span-2"></div>
+            <div className="col-span-1"></div>
           </div>
           {users.map((user, i) => (
             <motion.div
@@ -177,18 +180,22 @@ export default function AdminUsersPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: i * 0.02 }}
-              className="grid grid-cols-12 gap-2 px-4 py-4 items-center hover:bg-neutral-50"
+              className="flex flex-col sm:grid sm:grid-cols-12 gap-4 sm:gap-2 px-4 py-4 items-start sm:items-center hover:bg-neutral-50"
             >
-              <div className="col-span-4">
+              <div className="col-span-4 w-full">
                 <p className="font-black text-sm">{user.firstName || user.lastName ? `${user.firstName} ${user.lastName}`.trim() : "—"}</p>
                 <p className="text-xs text-neutral-500 truncate">{user.collegeEmail}</p>
               </div>
-              <div className="col-span-2">
+
+              <div className="col-span-2 flex items-center gap-2 sm:block">
+                <span className="sm:hidden text-[10px] font-black uppercase text-neutral-400">Role:</span>
                 <span className={`text-xs font-black px-1.5 py-0.5 ${user.role === "ADMIN" ? "bg-black text-white" : "bg-neutral-100"}`}>
                   {user.role}
                 </span>
               </div>
-              <div className="col-span-2 flex flex-col gap-1">
+
+              <div className="col-span-3 flex flex-row sm:flex-col gap-2 sm:gap-1 items-center sm:items-start">
+                <span className="sm:hidden text-[10px] font-black uppercase text-neutral-400">Status:</span>
                 {user.mustChangePassword && (
                   <span className="text-xs font-bold text-amber-700 px-1 uppercase tracking-tight">Force Reset</span>
                 )}
@@ -201,13 +208,19 @@ export default function AdminUsersPage() {
                   <span className="text-xs text-neutral-400">Active</span>
                 )}
               </div>
-              <div className="col-span-2 text-xs text-neutral-500">
-                {formatDate(user.createdAt)}
+
+              <div className="col-span-2 flex items-center gap-2 sm:block">
+                <span className="sm:hidden text-[10px] font-black uppercase text-neutral-400">Joined:</span>
+                <p className="text-xs text-neutral-500">
+                  {formatDate(user.createdAt)}
+                </p>
               </div>
-              <div className="col-span-2 flex justify-end">
+
+              <div className="col-span-1 flex justify-end w-full sm:w-auto mt-2 sm:mt-0">
                 <Button
                   size="sm"
                   variant="outline"
+                  className="w-full sm:w-auto"
                   onClick={() => {
                     setResetTarget(user);
                     setResetPassword(generateTempPassword());
@@ -227,7 +240,7 @@ export default function AdminUsersPage() {
             <DialogTitle>Create user</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="cu-first">First name</Label>
                 <Input id="cu-first" value={form.firstName} onChange={(e) => updateForm("firstName", e.target.value)} />
@@ -243,13 +256,13 @@ export default function AdminUsersPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="cu-quote">Quote</Label>
-              <Input id="cu-quote" value={form.quote} onChange={(e) => updateForm("quote", e.target.value)} placeholder="Optional initial quote" />
+              <Input id="cu-quote" value={form.quote} onChange={(e) => updateForm("quote", e.target.value)} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="cu-pw">Temporary password</Label>
               <Input id="cu-pw" type="text" value={form.password} onChange={(e) => updateForm("password", e.target.value)} />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 pb-2">
               <Label>Role</Label>
               <Select value={form.role} onValueChange={(v) => updateForm("role", v)}>
                 <SelectTrigger>

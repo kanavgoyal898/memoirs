@@ -10,6 +10,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/providers/toast-provider";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Plus } from "lucide-react";
+
 interface WallPost {
   id: string;
   imageUrl: string;
@@ -27,6 +36,7 @@ export default function WallPage() {
   const [caption, setCaption] = useState("");
   const [pendingImage, setPendingImage] = useState<string | null>(null);
   const [posting, setPosting] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const loadPosts = useCallback(async () => {
     const res = await fetch("/api/wall?limit=50");
@@ -54,6 +64,7 @@ export default function WallPage() {
       setPosts((prev) => [data, ...prev]);
       setPendingImage(null);
       setCaption("");
+      setOpen(false);
       toast({ title: "Post shared" });
     } catch (err) {
       toast({
@@ -75,44 +86,61 @@ export default function WallPage() {
 
   return (
     <div className="space-y-10">
-      <div className="border-b-2 border-black pb-6">
-        <h1 className="text-3xl font-black">Memory Wall</h1>
-        <p className="text-sm text-neutral-500 mt-1">Share photos and memories. Limit: 5 posts per day.</p>
-      </div>
-
-      <div className="border-2 border-black p-6 shadow-[4px_4px_0px_#000] space-y-4">
-        <h2 className="font-black">Share a memory</h2>
-        {pendingImage ? (
-          <div className="flex items-center gap-3 border-2 border-black p-3">
-            <span className="text-xs font-black bg-black text-white px-2 py-1">IMAGE READY</span>
-            <span className="text-xs text-neutral-500 flex-1">{pendingImage}</span>
-            <button
-              className="text-xs underline"
-              onClick={() => setPendingImage(null)}
-            >
-              Remove
-            </button>
-          </div>
-        ) : (
-          <FileUpload
-            onUpload={(id) => setPendingImage(id)}
-            label="Upload photo"
-            type="image"
-          />
-        )}
-        <div className="space-y-2">
-          <Label htmlFor="caption">Caption</Label>
-          <Textarea
-            id="caption"
-            placeholder="Write a caption..."
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            className="min-h-[80px]"
-          />
+      <div className="border-b-2 border-black pb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-black tracking-tighter">Memory Wall</h1>
+          <p className="text-sm text-neutral-500 mt-1">Share photos and memories with your batchmates.</p>
         </div>
-        <Button onClick={handlePost} disabled={posting || !pendingImage}>
-          {posting ? "Sharing..." : "Share"}
-        </Button>
+
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button className="h-12 px-6 gap-2 text-md">
+              <Plus className="h-5 w-5" /> Share a memory
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="bg-pastel-yellow sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-2xl uppercase">Share a memory</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              {pendingImage ? (
+                <div className="flex items-center gap-3 border-2 border-black p-3 bg-white">
+                  <span className="text-[10px] font-black bg-black text-white px-1.5 py-0.5 uppercase">Ready</span>
+                  <span className="text-xs text-neutral-500 flex-1 truncate">{pendingImage}</span>
+                  <button
+                    className="text-xs underline font-bold"
+                    onClick={() => setPendingImage(null)}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <FileUpload
+                  onUpload={(id) => setPendingImage(id)}
+                  label="Upload photo"
+                  type="image"
+                />
+              )}
+              <div className="space-y-2">
+                <Label htmlFor="caption" className="font-black uppercase text-xs">Caption</Label>
+                <Textarea
+                  id="caption"
+                  placeholder="Write something about this photo..."
+                  value={caption}
+                  onChange={(e) => setCaption(e.target.value)}
+                  className="min-h-[100px] border-2 border-black focus-visible:ring-0"
+                />
+              </div>
+              <Button
+                onClick={handlePost}
+                disabled={posting || !pendingImage}
+                className="w-full h-12 text-lg"
+              >
+                {posting ? "Sharing..." : "Post Memory"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {loading ? (

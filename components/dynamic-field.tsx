@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { MultiSelect } from "@/components/ui/multi-select";
+import { countryCodes } from "@/lib/countries";
 
 
 interface Question {
@@ -65,13 +66,16 @@ export function DynamicField({ question, value, onChange }: DynamicFieldProps) {
     case "number":
     case "date":
       return wrap(
-        <Input
-          id={question.slug}
-          type={question.type}
-          placeholder={placeholder}
-          value={(value as string) ?? ""}
-          onChange={(e) => onChange(e.target.value)}
-        />
+        <div className="w-full min-w-0">
+          <Input
+            id={question.slug}
+            type={question.type === "text" || question.type === "email" || question.type === "url" || question.type === "number" || question.type === "date" ? question.type : "text"}
+            placeholder={placeholder}
+            value={(value as string) ?? ""}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full"
+          />
+        </div>
       );
 
     case "textarea":
@@ -235,16 +239,17 @@ export function DynamicField({ question, value, onChange }: DynamicFieldProps) {
       const links = (value as Record<string, string>) ?? {};
       const platforms = question.options ?? ["Twitter", "LinkedIn", "Instagram", "GitHub"];
       return wrap(
-        <div className="space-y-2">
+        <div className="space-y-3">
           {platforms.map((platform) => (
-            <div key={platform} className="flex items-center gap-2">
-              <span className="text-xs font-black w-20 shrink-0">{platform}</span>
+            <div key={platform} className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+              <span className="text-[10px] sm:text-xs font-black w-20 shrink-0 uppercase tracking-wider">{platform}</span>
               <Input
                 placeholder={`${platform} URL`}
                 value={links[platform] ?? ""}
                 onChange={(e) =>
                   onChange({ ...links, [platform]: e.target.value })
                 }
+                className="w-full"
               />
             </div>
           ))}
@@ -252,33 +257,72 @@ export function DynamicField({ question, value, onChange }: DynamicFieldProps) {
       );
     }
 
+    case "phone": {
+      const phoneData = (value as { countryCode: string; number: string }) ?? {
+        countryCode: (question.config as any)?.defaultCountryCode ?? "+91",
+        number: "",
+      };
+      
+      return wrap(
+        <div className="flex flex-row items-center gap-2 w-full max-w-full">
+          <div className="w-24 shrink-0">
+            <Select
+              value={phoneData.countryCode}
+              onValueChange={(v) => onChange({ ...phoneData, countryCode: v })}
+            >
+              <SelectTrigger>
+                {phoneData.countryCode || "Code"}
+              </SelectTrigger>
+              <SelectContent className="max-h-[300px]">
+                {countryCodes.map((c) => (
+                  <SelectItem key={`${c.name}-${c.code}`} value={c.code}>
+                    {c.name} ({c.code})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Input
+            id={question.slug}
+            type="tel"
+            placeholder={placeholder || "Phone number"}
+            value={phoneData.number}
+            onChange={(e) => onChange({ ...phoneData, number: e.target.value })}
+            className="flex-1"
+          />
+        </div>
+      );
+    }
+
     case "key_value_list": {
       const pairs = (value as { key: string; value: string }[]) ?? [];
       return wrap(
-        <div className="space-y-2">
+        <div className="space-y-4">
           {pairs.map((pair, i) => (
-            <div key={i} className="flex gap-2 items-center">
-              <Input
-                placeholder="Key"
-                value={pair.key}
-                onChange={(e) => {
-                  const next = [...pairs];
-                  next[i] = { ...next[i], key: e.target.value };
-                  onChange(next);
-                }}
-              />
-              <Input
-                placeholder="Value"
-                value={pair.value}
-                onChange={(e) => {
-                  const next = [...pairs];
-                  next[i] = { ...next[i], value: e.target.value };
-                  onChange(next);
-                }}
-              />
+            <div key={i} className="flex flex-col sm:flex-row gap-2 items-start sm:items-center border-2 border-black p-3 sm:p-0 sm:border-0 bg-neutral-50 sm:bg-transparent">
+              <div className="grid grid-cols-2 gap-2 w-full">
+                <Input
+                  placeholder="Key"
+                  value={pair.key}
+                  onChange={(e) => {
+                    const next = [...pairs];
+                    next[i] = { ...next[i], key: e.target.value };
+                    onChange(next);
+                  }}
+                />
+                <Input
+                  placeholder="Value"
+                  value={pair.value}
+                  onChange={(e) => {
+                    const next = [...pairs];
+                    next[i] = { ...next[i], value: e.target.value };
+                    onChange(next);
+                  }}
+                />
+              </div>
               <button
                 onClick={() => onChange(pairs.filter((_, j) => j !== i))}
-                className="border-2 border-black p-1 hover:bg-black hover:text-white transition-colors"
+                className="self-end sm:self-auto border-2 border-black p-1.5 hover:bg-black hover:text-white transition-colors bg-white"
               >
                 <X className="h-4 w-4" />
               </button>

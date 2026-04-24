@@ -86,7 +86,7 @@ export default function AdminImportPage() {
   }
 
   return (
-    <div className="max-w-3xl space-y-8">
+    <div className="space-y-8">
       <div className="border-b-2 border-black pb-6">
         <h1 className="text-3xl font-black">Bulk Import</h1>
         <p className="text-sm text-neutral-500 mt-1">
@@ -107,7 +107,7 @@ export default function AdminImportPage() {
           }}
         >
           <Upload className="h-10 w-10 mb-4" />
-          <p className="font-black text-lg">{parsing ? "Parsing..." : "Drop CSV here or click to browse"}</p>
+          <p className="font-black text-lg text-center">{parsing ? "Parsing..." : "Drop CSV here or click to browse"}</p>
           <p className="text-sm text-neutral-500 mt-1">Max 1MB</p>
           <input
             type="file"

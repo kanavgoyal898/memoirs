@@ -50,7 +50,8 @@ const FIELD_TYPES = [
   { value: "gallery", label: "Image Gallery Upload" },
   { value: "file", label: "File Upload" },
   { value: "key_value_list", label: "Key-Value List" },
-  { value: "toggle", label: "Yes/No Toggle" }
+  { value: "toggle", label: "Yes/No Toggle" },
+  { value: "phone", label: "Phone Number" }
 ];
 
 const REQUIRES_OPTIONS = ["select", "radio", "checkbox", "multi-select"];
@@ -102,7 +103,9 @@ export default function AdminQuestionsPage() {
       description: q.description ?? "",
       type: q.type,
       required: q.required,
-      options: (q.options ?? []).join(", "),
+      options: q.type === "phone" 
+        ? ((q as any).config?.defaultCountryCode ?? "+91")
+        : (q.options ?? []).join(", "),
     });
     setDialogOpen(true);
   }
@@ -124,6 +127,9 @@ export default function AdminQuestionsPage() {
 
       if (REQUIRES_OPTIONS.includes(form.type)) {
         payload.options = form.options.split(",").map(s => s.trim()).filter(Boolean);
+      } else if (form.type === "phone") {
+        payload.config = { defaultCountryCode: form.options || "+91" };
+        payload.options = null;
       } else {
         payload.options = null;
       }
@@ -239,9 +245,12 @@ export default function AdminQuestionsPage() {
                 {q.options && q.options.length > 0 && (
                   <p className="text-xs text-neutral-500 mt-2">Options: {q.options.join(", ")}</p>
                 )}
+                {q.type === "phone" && (q as any).config?.defaultCountryCode && (
+                  <p className="text-xs text-neutral-500 mt-2">Default Country Code: {(q as any).config.defaultCountryCode}</p>
+                )}
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between gap-2 w-full sm:w-auto">
                 <div className="flex flex-col gap-1 mr-4">
                   <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleMove(i, -1)} disabled={i === 0}>
                     <ArrowUp className="h-4 w-4" />
@@ -250,12 +259,14 @@ export default function AdminQuestionsPage() {
                     <ArrowDown className="h-4 w-4" />
                   </Button>
                 </div>
-                <Button variant="outline" size="icon" onClick={() => openEdit(q)}>
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" size="icon" className="text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => handleDelete(q.id)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="flex flex-row gap-2">
+                  <Button variant="outline" size="icon" onClick={() => openEdit(q)}>
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="icon" className="text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => handleDelete(q.id)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </motion.div>
           ))}
@@ -327,6 +338,18 @@ export default function AdminQuestionsPage() {
                   value={form.options}
                   onChange={(e) => setForm({ ...form, options: e.target.value })}
                   placeholder="Option 1, Option 2, Option 3"
+                />
+              </div>
+            )}
+            
+            {form.type === "phone" && (
+              <div className="space-y-2">
+                <Label htmlFor="defaultCountryCode">Default Country Code</Label>
+                <Input
+                  id="defaultCountryCode"
+                  value={form.options}
+                  onChange={(e) => setForm({ ...form, options: e.target.value })}
+                  placeholder="+91"
                 />
               </div>
             )}

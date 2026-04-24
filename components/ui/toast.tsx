@@ -12,7 +12,7 @@ const ToastViewport = React.forwardRef<
   <ToastPrimitive.Viewport
     ref={ref}
     className={cn(
-      "fixed bottom-4 right-4 z-[100] flex max-h-screen w-full max-w-sm flex-col gap-2",
+      "fixed bottom-0 right-0 z-[100] flex max-h-screen w-full flex-col p-4 sm:bottom-4 sm:right-4 sm:max-w-sm sm:p-0 gap-2",
       className
     )}
     {...props}
@@ -29,7 +29,7 @@ const Toast = React.forwardRef<
   <ToastPrimitive.Root
     ref={ref}
     className={cn(
-      "flex w-full items-start justify-between border-2 border-black p-4 shadow-[4px_4px_0px_#000] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right-full",
+      "flex w-full max-w-full items-start justify-between border-2 border-black p-4 shadow-[4px_4px_0px_#000] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-80 sm:data-[state=closed]:slide-out-to-right-full",
       variant === "destructive" ? "bg-black text-white" : "bg-pastel-orange text-black",
       className
     )}

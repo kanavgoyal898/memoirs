@@ -89,9 +89,20 @@ function generateYearbookHtml(
         .map((q) => {
           const val = answers[q.slug];
           let display = "";
-          if (Array.isArray(val)) display = val.join(", ");
-          else if (typeof val === "object" && val !== null) display = JSON.stringify(val);
-          else display = String(val);
+          if (Array.isArray(val)) {
+            display = val.join(", ");
+          } else if (typeof val === "object" && val !== null) {
+            const obj = val as any;
+            if (obj.countryCode && obj.number) {
+              display = `${obj.countryCode} ${obj.number}`;
+            } else if (q.type === "social_links") {
+              display = Object.entries(obj).filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`).join(", ");
+            } else {
+              display = JSON.stringify(val);
+            }
+          } else {
+            display = String(val);
+          }
           return `<tr><td style="font-weight:700;padding:4px 8px;border-bottom:1px solid #eee">${q.label}</td><td style="padding:4px 8px;border-bottom:1px solid #eee">${display}</td></tr>`;
         })
         .join("");

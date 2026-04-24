@@ -112,6 +112,11 @@ export default async function ProfilePage({ params }: Props) {
         );
       case "toggle":
         return <span className="text-sm font-bold">{value ? "Yes" : "No"}</span>;
+      case "phone": {
+        const phone = value as { countryCode: string; number: string };
+        if (typeof value === "string") return <span className="text-sm">{value}</span>;
+        return <span className="text-sm">{phone.countryCode} {phone.number}</span>;
+      }
       default:
         return <span className="text-sm">{String(value)}</span>;
     }

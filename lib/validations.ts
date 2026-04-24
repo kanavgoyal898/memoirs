@@ -42,7 +42,7 @@ export const questionSchema = z.object({
     "select", "radio", "checkbox", "multi-select",
     "image", "gallery", "file",
     "social_links", "key_value_list",
-    "toggle",
+    "toggle", "phone"
   ]),
   required: z.boolean().default(false),
   order: z.number().int(),

@@ -21,6 +21,7 @@ export async function computeProfileCompletion(email: string): Promise<number> {
     if (val === null || val === undefined) return false;
     if (typeof val === "string" && val.trim() === "") return false;
     if (Array.isArray(val) && val.length === 0) return false;
+    if (typeof val === "object" && val !== null && (val as any).number === "") return false;
     return true;
   });
 

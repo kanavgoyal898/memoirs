@@ -43,6 +43,25 @@ input[type="checkbox"] {
   cursor: pointer;
 }
 
+input[type="date"] {
+  min-height: 40px;
+  position: relative;
+}
+
+/* Ensure the date picker icon doesn't cause overflow */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background: transparent;
+  bottom: 0;
+  color: transparent;
+  cursor: pointer;
+  height: auto;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
+}
+
 @theme {
   --color-pastel-pink: #ffd1dc;
   --color-pastel-blue: #aec6cf;
